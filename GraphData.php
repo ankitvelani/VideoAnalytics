@@ -31,7 +31,9 @@ $ops=array(
 
     array(
         '$match'=>array(
-            'dates'=>array('$gte'=>$UserDate1,'$lte'=>$UserDate2)
+            'dates'=>array('$gte'=>$UserDate1,'$lte'=>$UserDate2),
+            'hours'=>array('$gte'=>sprintf("%02d", $UserHour1),'$lte'=>sprintf("%02d", $UserHour2))
+
         )
     ),
 
