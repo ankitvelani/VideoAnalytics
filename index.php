@@ -16,6 +16,26 @@ if(isset($_POST['submit'])) {
 
 
 }
+
+if(isset($_POST['Filter'])){
+
+    $time = strtotime($_POST['DateFilter-date1']);
+    $UserOriginalDate1=$_POST['DateFilter-date1'];
+    $UserDate1 = $newformat = date('Y-m-d', $time);
+    $UserHour1 = $newformat = date('H', $time);
+
+    $time2 = strtotime($_POST['DateFilter-date2']);
+    $UserOriginalDate2=$_POST['DateFilter-date2'];
+    $UserDate2 = $newformat = date('Y-m-d', $time2);
+    $UserHour2 = $newformat = date('H', $time2);
+
+    $DateFilter=$_POST['DateFilter'];
+    if($DateFilter!=="All")
+        include "GraphData2.php";
+    else
+        include "GraphData.php";
+
+}
 ?>
 
 
@@ -61,6 +81,41 @@ if(isset($_POST['submit'])) {
 
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+    <script type="text/javascript">
+        google.charts.load('current', {'packages':['bar']});
+        google.charts.setOnLoadCallback(drawStuff);
+
+        function drawStuff() {
+            var data = new google.visualization.arrayToDataTable([
+                ['Day', 'Head Count'],
+                <?=$str0;?>
+            ]);
+
+            var options = {
+                height:350,
+                chart: {
+                    title: '',
+                    subtitle: ''
+                },
+                legend: {position: 'none'},
+                bars: 'verticle', // Required for Material Bar Charts.
+                series: {
+                    0: { axis: 'distance' }, // Bind series 0 to an axis named 'distance'.
+                    1: { axis: 'brightness' } // Bind series 1 to an axis named 'brightness'.
+                },
+                axes: {
+                    x: {
+                        distance: {label: 'parsecs'}, // Bottom x-axis.
+                        brightness: {side: 'top', label: 'apparent magnitude'} // Top x-axis.
+                    }
+                }
+            };
+
+            var chart = new google.charts.Bar(document.getElementById('by_day'));
+            chart.draw(data, options);
+        };
+    </script>
 
 
     <script type="text/javascript">
@@ -256,6 +311,51 @@ if(isset($_POST['submit'])) {
                     </div>
 
                 </div>
+
+                <div class="col-sm-12">
+                    <div class="box box-info">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Head Count By Day</h3>
+
+                            <form class="form-inline pull-right" method="post" action="">
+
+
+
+                                <div class="form-group">
+                                    <div class='input-group'>
+                                        <input type='hidden' class="form-control" name="DateFilter-date1" value="<?=$UserOriginalDate1;?>"  />
+                                        <input type='hidden' class="form-control" name="DateFilter-date2" value="<?=$UserOriginalDate2;?>" />
+
+
+                                        <select class="form-control" name="DateFilter">
+                                            <option selected>All</option>
+                                            <?php
+
+                                            foreach ($DateRange as $d)
+                                            {
+                                            ?>
+
+                                                <option value="<?=$d?>" <?=$d == $DateFilter ? ' selected="selected"' : '';?> ><?=$d?></option>
+                                            <?php
+                                            }
+                                            ?>
+                                        </select>
+
+                                    </div>
+                                    <input type="submit" value="Filter" name="Filter" class="btn btn-warning">
+                                </div>
+                            </form>
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                            <div id="by_day" class="img img-responsive"></div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+
 
                 <div class="col-sm-12">
                     <div class="box box-info">

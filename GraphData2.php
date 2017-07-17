@@ -7,8 +7,6 @@ $collection=$db->PersonCount;
 
 
 
-
-
 $ops=array(
 
     array(
@@ -62,6 +60,60 @@ foreach ($c as $document)
 $str0=substr($str0,0,strlen($str0)-1);
 
 
+$ops=array(
+
+    array(
+        '$project'=>array(
+            "_id"=>0,
+            'PersonCount'=>1,
+            'CameraID'=>1,
+            'dates'=>array('$dateToString'=>array('format'=>'%Y-%m-%d',"date"=>'$date')),
+
+        )
+    ),
+    array(
+        '$match'=>array(
+
+            'dates'=>array('$eq'=>$DateFilter)
+
+        )
+    ),
+    array(
+        '$group'=>array(
+            '_id'=>array(
+
+                'dates'=>'$dates'
+            ),
+            'Total'=>array('$max'=>'$PersonCount')
+
+        )
+    ),
+    array(
+        '$sort'=>array(
+            '_id'=>1
+        )
+    )
+);
+
+$c=$collection->aggregate($ops);
+
+$str0="";
+
+foreach ($c as $document)
+{
+    foreach ($document as $d)
+    {
+
+        $str0.="['".$d['_id']['dates']."',".$d['Total']."],";
+
+
+    }
+
+}
+
+$str0=substr($str0,0,strlen($str0)-1);
+
+
 
 
 
@@ -81,8 +133,8 @@ $ops=array(
 
     array(
         '$match'=>array(
-            'dates'=>array('$gte'=>$UserDate1,'$lte'=>$UserDate2),
-            'hours'=>array('$gte'=>sprintf("%02d", $UserHour1),'$lte'=>sprintf("%02d", $UserHour2))
+
+            'dates'=>array('$eq'=>$DateFilter),
 
         )
     ),
@@ -119,7 +171,7 @@ foreach ($c as $document)
 
 }
 
- $str= substr($str,0,strlen($str)-1);
+$str= substr($str,0,strlen($str)-1);
 
 
 
@@ -137,8 +189,9 @@ $ops=array(
     ),
     array(
         '$match'=>array(
-            'dates'=>array('$gte'=>$UserDate1,'$lte'=>$UserDate2),
-            'hours'=>array('$gte'=>sprintf("%02d", $UserHour1),'$lte'=>sprintf("%02d", $UserHour2))
+
+            'dates'=>array('$eq'=>$DateFilter),
+
 
         )
     ),

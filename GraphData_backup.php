@@ -119,7 +119,7 @@ foreach ($c as $document)
 
 }
 
- $str= substr($str,0,strlen($str)-1);
+$str= substr($str,0,strlen($str)-1);
 
 
 
